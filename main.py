@@ -1,9 +1,11 @@
-import logging, logging.config
+import logging
+import logging.config
 import time
 import argparse
 import sys
 import cProfile
 import re
+
 
 class Main():
     def __init__(self):
@@ -12,7 +14,11 @@ class Main():
         self.timer = self._setup_timing()
 
     def _parse_args(self):
-        # Parses command line arguments, new ones are added here
+        '''
+        Parses command line arguments, new ones are added here
+
+        returns configuration
+        '''
         parser = argparse.ArgumentParser(description='Small script to do X')
         parser.add_argument('-l',
                             '--log_config',
@@ -31,11 +37,16 @@ class Main():
                             default=False,
                             const=True,
                             action='store_const',
-                            help="Run unit tests instead of running the program")
+                            help="Run unit tests instead of the program")
         return parser.parse_args()
 
     def _setup_logging(self):
-        # Attempts to load a logging config from disk, if it is not found a standard one is created
+        '''
+        Attempts to load a logging config from disk
+        if it is not found a standard one is created
+
+        returns a logger
+        '''
         try:
             logging.config.fileConfig(self.config.log_config)
         except Exception as E:
@@ -43,10 +54,10 @@ class Main():
             tempLogger.setLevel(logging.DEBUG)
             handler = logging.StreamHandler()
             handler.setLevel(logging.DEBUG)
-            standard_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            error_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
             handler.setFormatter(logging.Formatter(standard_format))
             tempLogger.addHandler(handler)
-            error = "Unable to load logging configuration, using defaults. Error was: " + str(E)
+            error = "Using default logger. " + str(E)
             tempLogger.warn(error)
 
         logger = logging.getLogger(__name__)
@@ -62,7 +73,8 @@ class Main():
 
     def stop_timer(self):
         '''
-        Reset the timer, and return the time between the current call and previous call,
+        Reset the timer
+        returns the time between the current call and previous call,
         or the previous call to start_timer()
         '''
         difference = time.time() - self.timer
@@ -78,17 +90,23 @@ class Main():
             except ImportError as E:
                 self.logger.critical("Unable to run tests " + str(E))
         elif self.config.profile:
-            cProfile.runctx('self.user_main()', globals(), locals(), sort='tottime')
+            cProfile.runctx('self.user_main()',
+                            globals(),
+                            locals(),
+                            sort='tottime')
         else:
             self.user_main()
 
     def user_main(self):
-        #User code goes here
+        '''
+        User code goes here
+        '''
         x = 0
         for i in range(100):
             x = x + i
             print(x)
 
+
 if __name__ == "__main__":
-        app = Main()
-        app.run()
+    app = Main()
+    app.run()
