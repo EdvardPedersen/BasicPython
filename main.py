@@ -55,7 +55,7 @@ class Main():
             handler = logging.StreamHandler()
             handler.setLevel(logging.DEBUG)
             error_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            handler.setFormatter(logging.Formatter(standard_format))
+            handler.setFormatter(logging.Formatter(error_fmt))
             tempLogger.addHandler(handler)
             error = "Using default logger. " + str(E)
             tempLogger.warn(error)
